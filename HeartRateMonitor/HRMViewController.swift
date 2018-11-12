@@ -31,7 +31,10 @@
 import UIKit
 import CoreBluetooth
 
+// UUIDs for Services
 let heartRateServiceCBUUID = CBUUID(string: "0x180D")
+
+// UUIDs for Characteristics
 let heartRateMeasurementCharacteristicCBUUID = CBUUID(string: "2A37")
 let bodySensorLocationCharacteristicCBUUID = CBUUID(string: "2A38")
 
@@ -49,6 +52,7 @@ class HRMViewController: UIViewController {
     // Make the digits monospaces to avoid shifting when the numbers change
     heartRateLabel.font = UIFont.monospacedDigitSystemFont(ofSize: heartRateLabel.font!.pointSize, weight: .regular)
     
+    // Initilize Central Manager
     centralManager = CBCentralManager(delegate: self, queue: nil)
     
   }
@@ -63,6 +67,7 @@ class HRMViewController: UIViewController {
 // MARK: Bluetooth
 
 extension HRMViewController: CBCentralManagerDelegate {
+  // This gets called right when the View Loads
   func centralManagerDidUpdateState(_ central: CBCentralManager) {
     switch central.state {
       
@@ -77,6 +82,7 @@ extension HRMViewController: CBCentralManagerDelegate {
     case .poweredOff:
       <#code#>
     case .poweredOn:
+      // If Bluetooth is powered on, start scanning for peripherals
       print("central.state is .poweredOn")
       centralManager.scanForPeripherals(withServices: [heartRateServiceCBUUID])
     }
