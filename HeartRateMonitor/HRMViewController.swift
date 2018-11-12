@@ -83,6 +83,7 @@ extension HRMViewController: CBCentralManagerDelegate {
       <#code#>
     case .poweredOn:
       // If Bluetooth is powered on, start scanning for peripherals
+      // Only scan for Peripherals with a specific UUID
       print("central.state is .poweredOn")
       centralManager.scanForPeripherals(withServices: [heartRateServiceCBUUID])
     }
@@ -90,9 +91,14 @@ extension HRMViewController: CBCentralManagerDelegate {
   }
   
   func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+    // Peripheral found
     heartRatePeripheral = peripheral
+    // Set Peripherals delegate to seld
     heartRatePeripheral.delegate = self
+    // Stop scanning once all peripherals are found
+    // This will save energy on both the device and phone
     centralManager.stopScan()
+    // Connect the Central Manager to the Peripheral
     centralManager.connect(heartRatePeripheral)
   }
   
@@ -108,6 +114,7 @@ extension HRMViewController: CBPeripheralDelegate {
   func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
     guard let services = peripheral.services else { return }
     
+    // For each Service of a Peripheral, find it's Characteristics
     for service in services {
       print(service)
       peripheral.discoverCharacteristics(nil, for: service)
@@ -118,6 +125,7 @@ extension HRMViewController: CBPeripheralDelegate {
                   error: Error?) {
     guard let characteristics = service.characteristics else { return }
     
+    // Loop through each Characteristic
     for characteristic in characteristics {
       print(characteristic)
       
@@ -132,7 +140,6 @@ extension HRMViewController: CBPeripheralDelegate {
         // This stop polling of data
         peripheral.setNotifyValue(true, for: characteristic)
       }
-
       
     }
   }
